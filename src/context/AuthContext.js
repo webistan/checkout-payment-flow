@@ -50,7 +50,8 @@ export function AuthProvider({ children }) {
 
           setLoading(false);
           if (userCredential?.user?.uid) {
-            setUser(userCredential.user);
+            // setUser(userCredential.user);
+            console.log("logged in");
           } else {
             window.location.href = "/invalid-user";
           }
