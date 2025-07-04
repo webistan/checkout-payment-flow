@@ -1,0 +1,541 @@
+:root {
+  --primary: #232c64;
+  --primary-light: #343e7c;
+  --primary-dark: #1a2250;
+  --secondary: #f7a01d;
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --success-dark: #059669;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --bg-light: #f8fafc;
+  --bg-gray: #f1f5f9;
+  --white: #ffffff;
+  --border: #e2e8f0;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  line-height: 1.5;
+  color: var(--text-dark);
+  background: var(--bg-light);
+  font-size: 14px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header */
+.header {
+  background: var(--gradient);
+  padding: 0.75rem 0px;
+  box-shadow: var(--shadow-lg);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 9999;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* .logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.logo span {
+  color: var(--secondary);
+} */
+
+.logo {
+  transition:
+    opacity 0.3s ease,
+    width 0.3s ease;
+  opacity: 1;
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding-top: 4px;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.logo sup {
+  font-size: 12px;
+  color: var(--secondary-color);
+}
+
+.backLink {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.backLink:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+/* Main Content */
+.mainContent {
+  padding: 2rem 0;
+  margin: 4rem 0;
+}
+
+.checkoutGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Plan Details */
+.planDetails {
+  background: var(--white);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.planHeader {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.planBadge {
+  background: var(--success);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.planName {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.planDescription {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Duration Selector */
+.durationSection {
+  margin-bottom: 1.5rem;
+}
+
+.durationTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.75rem;
+}
+
+.selectWrapper {
+  position: relative;
+}
+
+.durationSelect {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: var(--white);
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+}
+
+.durationSelect:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(35, 44, 100, 0.1);
+}
+
+.selectArrow {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Cost Breakdown */
+.costBreakdown {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.breakdownTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.breakdownRowLast {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.breakdownLabel {
+  color: var(--text-dark);
+}
+
+.breakdownValue {
+  font-weight: 500;
+}
+
+.breakdownSavings {
+  color: var(--success);
+}
+
+/* Key Features */
+.featuresSection {
+  margin-bottom: 1.5rem;
+}
+
+.featuresTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.75rem;
+}
+
+.featuresList {
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.featuresList li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+}
+
+.checkIcon {
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Payment Section */
+.paymentSection {
+  position: sticky;
+  top: 1rem;
+}
+
+.paymentCard {
+  background: var(--white);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border);
+  animation: fadeIn 0.5s ease-out;
+  animation-delay: 0.1s;
+}
+
+.paymentTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Pricing Display */
+.pricingDisplay {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: var(--bg-light);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.originalPrice {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  margin-bottom: 0.25rem;
+}
+
+.currentPrice {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.pricePeriod {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.savingsBadge {
+  background: var(--success);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  display: inline-block;
+}
+
+/* Security Items */
+.securityItems {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.securityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.securityIcon {
+  color: var(--success);
+}
+
+/* Pay Button */
+.payButton {
+  width: 100%;
+  background: var(--gradient);
+  color: var(--white);
+  border: none;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 1rem;
+}
+
+.payButton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xl);
+}
+
+.payButton:active {
+  transform: translateY(0);
+}
+
+.loading {
+  background: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.success {
+  background: var(--success);
+}
+
+.logoContainer {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: -1px;
+  z-index: 3;
+}
+
+.loadingSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--white);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Guarantee */
+/* .guarantee {
+  background: var(--success-light);
+  border: 1px solid var(--success);
+  color: var(--success-dark);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.guaranteeTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.guaranteeText {
+  font-size: 0.75rem;
+  opacity: 0.9;
+} */
+
+.payText {
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .checkoutGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .paymentSection {
+    position: static;
+    order: -1;
+  }
+
+  .mainContent {
+    padding: 1.5rem 0;
+  }
+
+  .planName {
+    font-size: 1.5rem;
+  }
+
+  .currentPrice {
+    font-size: 1.75rem;
+  }
+
+  .securityItems {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  .planDetails,
+  .paymentCard {
+    padding: 1.25rem;
+  }
+
+  .currentPrice {
+    font-size: 1.5rem;
+  }
+}
+
+/* Subtle Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success Animation */
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.successCheck {
+  animation: checkmark 0.4s ease-out;
+}
+
+/* Container */
+.container {
+  animation-delay: 4s;
+}
