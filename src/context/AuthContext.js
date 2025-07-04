@@ -6,6 +6,7 @@ import { auth, db } from "../firebaseConfig";
 import { convertToBlobUrl, detectLocation } from "../utils/helper";
 import Notification from "../components/common/Notification/Notification";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
@@ -27,6 +28,7 @@ export function AuthProvider({ children }) {
   const [notificationError, setNotificationError] = useState(null);
   const [notificationSuccess, setNotificationSuccess] = useState(false);
   const [isOutsideIndia, setIsOutsideIndia] = useState(true);
+  const navigate = useNavigate();
 
   // Add a ref to track manual logout state
   const isManualLogoutRef = useRef(false);
@@ -53,16 +55,16 @@ export function AuthProvider({ children }) {
             // setUser(userCredential.user);
             console.log("logged in");
           } else {
-            window.location.href = "/invalid-user";
+            navigate("/invalid-user");
           }
         } catch (error) {
           setLoading(false);
           console.error("Error signing in with custom token:", error.message);
-          window.location.href = "/invalid-user";
+          navigate("/invalid-user");
         }
       })();
     } else {
-      window.location.href = "/invalid-user";
+      navigate("/invalid-user");
     }
   }, []);
 
