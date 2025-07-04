@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { FaLongArrowAltLeft, FaCheck, FaLock, FaCreditCard, FaShieldAlt } from 'react-icons/fa';
-import { createUpdateUser, getPlans } from '../../lib/firebaseFunction';
-import { handlePayment as handlePaymentService } from '../../utils/razorpayService';
-import styles from './checkout.module.css';
-import { useAuth } from '../../context/AuthContext';
-import { getProgressiveDiscountSummary, getModifiedDescription } from '../../utils/helper/checkout';
-import CheckoutLoader from '../common/Loader/CheckoutLoader';
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { FaLongArrowAltLeft, FaCheck, FaLock, FaCreditCard, FaShieldAlt } from "react-icons/fa";
+import { createUpdateUser, getPlans } from "../../lib/firebaseFunction";
+import { handlePayment as handlePaymentService } from "../../utils/razorpayService";
+import styles from "./checkout.module.css";
+import { useAuth } from "../../context/AuthContext";
+import { getProgressiveDiscountSummary, getModifiedDescription } from "../../utils/helper/checkout";
+import CheckoutLoader from "../common/Loader/CheckoutLoader";
 
 const Checkout = () => {
   const [selectedYears, setSelectedYears] = useState(6);
@@ -26,24 +26,22 @@ const Checkout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, setNotificationSuccess, setNotificationError, isOutsideIndia } = useAuth();
-  const planName = searchParams.get('plan') || 'basic';
-  const duration = searchParams.get('duration') || 'yearly';
+  const planName = searchParams.get("plan") || "basic";
+  const duration = searchParams.get("duration") || "yearly";
 
   // Currency symbol
-  const currencySymbol = isOutsideIndia ? '$' : '₹';
+  const currencySymbol = isOutsideIndia ? "$" : "₹";
 
   useEffect(() => {
     (async () => {
       setIsPlanLoading(true);
       try {
         const plans = await getPlans({ isOutsideIndia });
-        const selectedPlan = plans.plans.find((p) =>
-          p.title.toLowerCase().includes(planName.toLowerCase()),
-        );
+        const selectedPlan = plans.plans.find((p) => p.title.toLowerCase().includes(planName.toLowerCase()));
         setCurrentPlan({ ...selectedPlan, title: selectedPlan.title });
       } catch (error) {
-        console.error('Error loading plan:', error);
-        setNotificationError('Failed to load plan details. Please try again.');
+        console.error("Error loading plan:", error);
+        setNotificationError("Failed to load plan details. Please try again.");
       } finally {
         setIsPlanLoading(false);
       }
@@ -51,7 +49,7 @@ const Checkout = () => {
   }, [isOutsideIndia]);
 
   useEffect(() => {
-    if (duration === 'yearly') {
+    if (duration === "yearly") {
       setIsAnnually(true);
     } else {
       setIsAnnually(false);
@@ -95,7 +93,7 @@ const Checkout = () => {
         setCountdown(countdown - 1);
       }, 1000);
     } else if (isSuccess && countdown === 0) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
     return () => clearTimeout(timer);
   }, [isSuccess, countdown]);
@@ -135,11 +133,11 @@ const Checkout = () => {
         userEmail: user.email,
         fullName: user.fullName,
         onSuccess: async (response) => {
-          console.log('Payment successful', response);
+          console.log("Payment successful", response);
 
           const res = await createUpdateUser({ currentPlan: response }, undefined, isOutsideIndia);
           if (!res.success) {
-            setNotificationError(res.error || 'Failed to update plan');
+            setNotificationError(res.error || "Failed to update plan");
           } else {
             setNotificationSuccess(`Successfully upgraded to ${currentPlan.title} plan!`);
           }
@@ -148,31 +146,31 @@ const Checkout = () => {
           setCountdown(3);
         },
         onError: (error) => {
-          console.error('Payment failed', error);
-          setNotificationError(error || 'Payment failed. Please try again.');
+          console.error("Payment failed", error);
+          setNotificationError(error || "Payment failed. Please try again.");
           setIsLoading(false);
         },
         onDismiss: () => {
           setIsLoading(false);
         },
       },
-      user.currentPlan,
+      user.currentPlan
     );
   };
 
   // Get displayed period text
   const getPeriodText = () => {
     if (!isAnnually) {
-      return 'Monthly • Recurring payment';
+      return "Monthly • Recurring payment";
     }
-    return `${selectedYears} Year${selectedYears > 1 ? 's' : ''} • One-time payment`;
+    return `${selectedYears} Year${selectedYears > 1 ? "s" : ""} • One-time payment`;
   };
 
   // Calculate breakdown values
   const getBreakdownValues = () => {
     if (!isAnnually) {
       return {
-        description: 'Monthly Subscription',
+        description: "Monthly Subscription",
         originalPrice: currentPlan?.monthlyPrice || 0,
         discount: 0,
         savings: 0,
@@ -183,7 +181,7 @@ const Checkout = () => {
     const basePrice = currentPlan?.yearlyPrice || pricing.original || 0;
 
     return {
-      description: `${selectedYears} Year${selectedYears > 1 ? 's' : ''} at Base Price`,
+      description: `${selectedYears} Year${selectedYears > 1 ? "s" : ""} at Base Price`,
       originalPrice: basePrice * (selectedYears || 1),
       discount: pricing.discount || 0,
       savings: pricing.savings || 0,
@@ -197,19 +195,15 @@ const Checkout = () => {
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <Link to='/dashboard' className={styles.logo}>
+          <Link to="/dashboard" className={styles.logo}>
             <div className={styles.logoContainer}>
-              <img
-                src='/officeiq_icon_white.png'
-                alt='Office IQ Logo'
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              />
+              <img src="/officeiq_icon_white.png" alt="Office IQ Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
             </div>
             <span>
               AI Studio <sup>Beta</sup>
             </span>
           </Link>
-          <Link to={'/settings?page=plans'} className={styles.backLink}>
+          <Link to={"/settings?page=plans"} className={styles.backLink}>
             <FaLongArrowAltLeft />
             <span>Back to Pricing</span>
           </Link>
@@ -228,9 +222,7 @@ const Checkout = () => {
                 <div className={styles.planHeader}>
                   <div className={styles.planBadge}>Best Value</div>
                   <h1 className={styles.planName}>{`${currentPlan?.title} Plan`}</h1>
-                  <p className={styles.planDescription}>
-                    Perfect for growing businesses with AI-powered features and priority support.
-                  </p>
+                  <p className={styles.planDescription}>Perfect for growing businesses with AI-powered features and priority support.</p>
                 </div>
 
                 {/* Duration Selector */}
@@ -238,16 +230,11 @@ const Checkout = () => {
                   <div className={styles.durationSection}>
                     <h3 className={styles.durationTitle}>Choose Duration</h3>
                     <div className={styles.selectWrapper}>
-                      <select
-                        id='duration'
-                        className={styles.durationSelect}
-                        value={selectedYears}
-                        onChange={handleDurationChange}
-                      >
+                      <select id="duration" className={styles.durationSelect} value={selectedYears} onChange={handleDurationChange}>
                         {pricingOptions.map((option, index) => (
                           <option key={index} value={index + 1}>
-                            {index + 1} Year{index > 0 ? 's' : ''} - {currencySymbol}
-                            {option.price.toLocaleString('en-IN')}
+                            {index + 1} Year{index > 0 ? "s" : ""} - {currencySymbol}
+                            {option.price.toLocaleString("en-IN")}
                             {` (Save ${option.discount}%)`}
                           </option>
                         ))}
@@ -263,12 +250,10 @@ const Checkout = () => {
                   {Object.keys(currentPlan).length > 0 && (
                     <>
                       <div className={styles.breakdownRow}>
-                        <span className={styles.breakdownLabel}>
-                          {getBreakdownValues().description}
-                        </span>
+                        <span className={styles.breakdownLabel}>{getBreakdownValues().description}</span>
                         <span className={styles.breakdownValue}>
                           {currencySymbol}
-                          {getBreakdownValues().originalPrice.toLocaleString('en-IN')}
+                          {getBreakdownValues().originalPrice.toLocaleString("en-IN")}
                         </span>
                       </div>
 
@@ -279,7 +264,7 @@ const Checkout = () => {
                           </span>
                           <span className={`${styles.breakdownValue} ${styles.breakdownSavings}`}>
                             - {currencySymbol}
-                            {getBreakdownValues().discountPrice.toLocaleString('en-IN')}
+                            {getBreakdownValues().discountPrice.toLocaleString("en-IN")}
                           </span>
                         </div>
                       )}
@@ -288,7 +273,7 @@ const Checkout = () => {
                         <span className={styles.breakdownLabel}>Your Total</span>
                         <span className={styles.breakdownValue}>
                           {currencySymbol}
-                          {getBreakdownValues().total.toLocaleString('en-IN')}
+                          {getBreakdownValues().total.toLocaleString("en-IN")}
                         </span>
                       </div>
                     </>
@@ -304,15 +289,8 @@ const Checkout = () => {
                         <li key={index}>
                           <span className={styles.checkIcon}>
                             <FaCheck />
-                          </span>{' '}
-                          <span>
-                            {getModifiedDescription(
-                              feature,
-                              currentPlan,
-                              isAnnually,
-                              selectedYears,
-                            )}
-                          </span>
+                          </span>{" "}
+                          <span>{getModifiedDescription(feature, currentPlan, isAnnually, selectedYears)}</span>
                         </li>
                       ))}
                   </ul>
@@ -327,22 +305,22 @@ const Checkout = () => {
                   {/* Pricing Display */}
                   <div className={styles.pricingDisplay}>
                     {pricing.savings > 0 && (
-                      <div className={styles.originalPrice} id='originalPrice'>
+                      <div className={styles.originalPrice} id="originalPrice">
                         {currencySymbol}
-                        {pricing.original.toLocaleString('en-IN')}
+                        {pricing.original.toLocaleString("en-IN")}
                       </div>
                     )}
-                    <div className={styles.currentPrice} id='currentPrice'>
+                    <div className={styles.currentPrice} id="currentPrice">
                       {currencySymbol}
-                      {pricing.price.toLocaleString('en-IN')}
+                      {pricing.price.toLocaleString("en-IN")}
                     </div>
-                    <div className={styles.pricePeriod} id='pricePeriod'>
+                    <div className={styles.pricePeriod} id="pricePeriod">
                       {getPeriodText()}
                     </div>
                     {pricing.savings > 0 && (
-                      <div className={styles.savingsBadge} id='savingsBadge'>
+                      <div className={styles.savingsBadge} id="savingsBadge">
                         Save {currencySymbol}
-                        {pricing.savings.toLocaleString('en-IN')}
+                        {pricing.savings.toLocaleString("en-IN")}
                       </div>
                     )}
                   </div>
@@ -371,9 +349,7 @@ const Checkout = () => {
 
                   {/* Pay Button */}
                   <button
-                    className={`${styles.payButton} ${isLoading ? styles.loading : ''} ${
-                      isSuccess ? styles.success : ''
-                    }`}
+                    className={`${styles.payButton} ${isLoading ? styles.loading : ""} ${isSuccess ? styles.success : ""}`}
                     onClick={handlePayment}
                     disabled={isLoading || isSuccess}
                   >
@@ -396,7 +372,7 @@ const Checkout = () => {
                         </span>
                         <span className={styles.payText}>
                           Pay Now {currencySymbol}
-                          {pricing.price.toLocaleString('en-IN')}
+                          {pricing.price.toLocaleString("en-IN")}
                         </span>
                       </>
                     )}
