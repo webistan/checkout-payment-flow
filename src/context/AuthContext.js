@@ -4,9 +4,9 @@ import { Tooltip } from "react-tooltip";
 import { onAuthStateChanged, getIdToken, signInWithCustomToken } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { convertToBlobUrl, detectLocation } from "../utils/helper";
-import { decryptData } from "../utils/crypto";
 import Notification from "../components/common/Notification/Notification";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { decryptData } from "../utils/crypto";
 
 export const AuthContext = createContext();
 
@@ -19,7 +19,7 @@ export const getTokenId = async () => {
   return newToken;
 };
 
-const CUSTOM_TOKEN = process.env.NEXT_PUBLIC_CUSTOM_TOKEN_API;
+const CUSTOM_TOKEN = process.env.REACT_APP_CUSTOM_TOKEN_API;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -41,15 +41,16 @@ export function AuthProvider({ children }) {
       const result = decryptData(encryptedData);
       setSearchParamsData(result);
       const uid = result.userId || result.uid || result.data;
+
       if (!uid) {
-        console.error("No userId found in decrypted data");
+        console.error("Decrypted result:", result);
         return null;
       }
 
       return uid;
     } catch (error) {
       console.error("Decryption failed:", error);
-
+      console.error("Failed encrypted data:", encryptedData);
       return null;
     }
   };
@@ -107,15 +108,21 @@ export function AuthProvider({ children }) {
 
   // Effect to handle URL-based authentication
   useEffect(() => {
-    const encryptedData = searchParams.get("data");
+    // Only run on /checkout page
+    if (window.location.pathname !== "/checkout") return;
 
-    if (!encryptedData) {
-      console.error("No encrypted data found in URL");
-      navigate("/invalid-user");
-      return;
+    const encryptedData = searchParams.get("data");
+    if (!encryptedData) return;
+
+    // Always decode URI component before decryption
+    let decodedData;
+    try {
+      decodedData = decodeURIComponent(encryptedData);
+    } catch (e) {
+      decodedData = encryptedData;
     }
 
-    const uid = extractUserIdFromEncryptedData(encryptedData);
+    const uid = extractUserIdFromEncryptedData(decodedData);
 
     if (!uid) {
       navigate("/invalid-user");
@@ -124,6 +131,7 @@ export function AuthProvider({ children }) {
 
     (async () => {
       const signInSuccess = await signInWithCustomTokenAsync(uid);
+
       if (!signInSuccess) {
         navigate("/invalid-user");
       }
