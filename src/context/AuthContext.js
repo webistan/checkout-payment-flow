@@ -19,7 +19,7 @@ export const getTokenId = async () => {
   return newToken;
 };
 
-const CUSTOM_TOKEN = process.env.REACT_APP_CUSTOM_TOKEN_API;
+const CUSTOM_TOKEN = process.env.REACT_APP_CUSTOM_TOKEN_API || "https://customtoken-k6w4uioz4a-uc.a.run.app";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
