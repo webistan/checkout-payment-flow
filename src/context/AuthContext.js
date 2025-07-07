@@ -4,9 +4,9 @@ import { Tooltip } from "react-tooltip";
 import { onAuthStateChanged, getIdToken, signInWithCustomToken } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { convertToBlobUrl, detectLocation } from "../utils/helper";
+import { decryptData } from "../utils/crypto";
 import Notification from "../components/common/Notification/Notification";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export const AuthContext = createContext();
 
@@ -27,47 +27,110 @@ export function AuthProvider({ children }) {
   const [userDocUnsubscribed, setUserDocUnsubscribed] = useState(null);
   const [notificationError, setNotificationError] = useState(null);
   const [notificationSuccess, setNotificationSuccess] = useState(false);
+  const [searchParamsData, setSearchParamsData] = useState({});
   const [isOutsideIndia, setIsOutsideIndia] = useState(true);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // Add a ref to track manual logout state
   const isManualLogoutRef = useRef(false);
 
-  useEffect(() => {
-    const uid = Cookies.get("__uuid") || "";
+  // Helper function to extract user ID from encrypted data
+  const extractUserIdFromEncryptedData = (encryptedData) => {
+    try {
+      const result = decryptData(encryptedData);
+      setSearchParamsData(result);
+      const uid = result.userId || result.uid || result.data;
+      if (!uid) {
+        console.error("No userId found in decrypted data");
+        return null;
+      }
 
-    if (uid) {
-      (async () => {
-        try {
-          setLoading(true);
-          const response = await fetch(`${CUSTOM_TOKEN}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ uid }),
-          });
-          const customToken = await response.json();
-          const userCredential = await signInWithCustomToken(auth, customToken.token);
+      return uid;
+    } catch (error) {
+      console.error("Decryption failed:", error);
 
-          setLoading(false);
-          if (userCredential?.user?.uid) {
-            // setUser(userCredential.user);
-            console.log("logged in");
-          } else {
-            navigate("/invalid-user");
-          }
-        } catch (error) {
-          setLoading(false);
-          console.error("Error signing in with custom token:", error.message);
-          navigate("/invalid-user");
-        }
-      })();
-    } else {
-      navigate("/invalid-user");
+      return null;
     }
-  }, []);
+  };
 
+  // Helper function to sign in with custom token
+  const signInWithCustomTokenAsync = async (uid) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${CUSTOM_TOKEN}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uid }),
+      });
+      const customToken = await response.json();
+      const userCredential = await signInWithCustomToken(auth, customToken.token);
+
+      setLoading(false);
+      if (userCredential?.user?.uid) {
+        console.log("logged in");
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error signing in with custom token:", error.message);
+      return false;
+    }
+  };
+
+  // Helper function to process user document data
+  const processUserDocument = async (doc, currentUser, userId, outsideIndia) => {
+    if (doc.exists() && currentUser) {
+      const detail = { ...doc.data() };
+
+      if (detail.image) {
+        convertToBlobUrl(detail.image).then((imageUrl) => {
+          detail.image = imageUrl || "";
+        });
+      } else {
+        detail.image = "";
+      }
+
+      setUser({
+        ...detail,
+        uid: userId,
+        isFirstLogin: "isFirstLogin" in detail ? detail.isFirstLogin : true,
+        isOutsideIndia: outsideIndia,
+      });
+    }
+    setLoading(false);
+  };
+
+  // Effect to handle URL-based authentication
+  useEffect(() => {
+    const encryptedData = searchParams.get("data");
+
+    if (!encryptedData) {
+      console.error("No encrypted data found in URL");
+      navigate("/invalid-user");
+      return;
+    }
+
+    const uid = extractUserIdFromEncryptedData(encryptedData);
+
+    if (!uid) {
+      navigate("/invalid-user");
+      return;
+    }
+
+    (async () => {
+      const signInSuccess = await signInWithCustomTokenAsync(uid);
+      if (!signInSuccess) {
+        navigate("/invalid-user");
+      }
+    })();
+  }, [searchParams]);
+
+  // Effect to handle authentication state changes
   useEffect(() => {
     let userDocUnsubscribe = null;
 
@@ -90,27 +153,13 @@ export function AuthProvider({ children }) {
         // Use detectLocation function
         const outsideIndia = await detectLocation();
         setIsOutsideIndia(outsideIndia);
-        const userRef = doc(db, `users/${currentUser.uid}`);
+
+        // Get userId from localStorage (set by URL decryption) or use currentUser.uid
+        const userId = currentUser.uid;
+
+        const userRef = doc(db, `users/${userId}`);
         userDocUnsubscribe = onSnapshot(userRef, async (doc) => {
-          if (doc.exists() && currentUser) {
-            const detail = { ...doc.data() };
-
-            if (detail.image) {
-              convertToBlobUrl(detail.image).then((imageUrl) => {
-                detail.image = imageUrl || "";
-              });
-            } else {
-              detail.image = "";
-            }
-
-            setUser({
-              ...detail,
-              uid: currentUser.uid,
-              isFirstLogin: "isFirstLogin" in detail ? detail.isFirstLogin : true,
-              isOutsideIndia: outsideIndia,
-            });
-          }
-          setLoading(false);
+          await processUserDocument(doc, currentUser, userId, outsideIndia);
         });
         setUserDocUnsubscribed(() => userDocUnsubscribe);
       } else {
@@ -137,6 +186,9 @@ export function AuthProvider({ children }) {
         setUserDocUnsubscribed(null);
       }
 
+      // Clear userId from localStorage
+      localStorage.removeItem("userId");
+
       // Set user to null before calling Firebase signOut
       setUser(null);
       setLoading(true); // Set loading to prevent flash of protected content
@@ -157,6 +209,7 @@ export function AuthProvider({ children }) {
   const value = {
     user,
     setUser,
+    searchParamsData,
     isOutsideIndia,
     loading,
     setLoading,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaLongArrowAltLeft, FaCheck, FaLock, FaCreditCard, FaShieldAlt } from "react-icons/fa";
 import { createUpdateUser, getPlans } from "../../lib/firebaseFunction";
 import { handlePayment as handlePaymentService } from "../../utils/razorpayService";
@@ -23,11 +23,9 @@ const Checkout = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isPlanLoading, setIsPlanLoading] = useState(true);
   const [countdown, setCountdown] = useState(3);
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, setNotificationSuccess, setNotificationError, isOutsideIndia } = useAuth();
-  const planName = searchParams.get("plan") || "basic";
-  const duration = searchParams.get("duration") || "yearly";
+  const { user, setNotificationSuccess, setNotificationError, isOutsideIndia, searchParamsData } = useAuth();
+  const { plan: planName, duration } = searchParamsData;
 
   // Currency symbol
   const currencySymbol = isOutsideIndia ? "$" : "₹";
