@@ -29,8 +29,8 @@ const routes = [
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
           {routes.map(({ path, element, isProtected, isBoth = false }) => (
             <Route
@@ -48,8 +48,8 @@ function App() {
             />
           ))}
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
