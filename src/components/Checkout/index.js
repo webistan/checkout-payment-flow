@@ -91,7 +91,7 @@ const Checkout = () => {
         setCountdown(countdown - 1);
       }, 1000);
     } else if (isSuccess && countdown === 0) {
-      navigate("/dashboard");
+      navigate("https://studio.officeiq.ai/dashboard");
     }
     return () => clearTimeout(timer);
   }, [isSuccess, countdown]);
@@ -193,7 +193,7 @@ const Checkout = () => {
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <Link to="/dashboard" className={styles.logo}>
+          <Link to="https://studio.officeiq.ai/" className={styles.logo}>
             <div className={styles.logoContainer}>
               <img src="/officeiq_icon_white.png" alt="Office IQ Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
             </div>
@@ -201,7 +201,7 @@ const Checkout = () => {
               AI Studio <sup>Beta</sup>
             </span>
           </Link>
-          <Link to={"/settings?page=plans"} className={styles.backLink}>
+          <Link to={"https://studio.officeiq.ai/settings?page=plans"} className={styles.backLink}>
             <FaLongArrowAltLeft />
             <span>Back to Pricing</span>
           </Link>
